@@ -23,11 +23,6 @@ class UserStorage{ //사용자의 데이터를 서버(백엔드)에서 받아오
     }
 }
 
-// 1. 사용자에게 id, password 입력받아오기
-// 2. 서버에 login
-// 3. login에 성공한다면 받아온 id에 role 할당
-// 4. 출력
-
 const UserStorage = new UserStorage();
 const id = prompt('enter your id');
 //prompt API: 화면에 dialog 띄움
