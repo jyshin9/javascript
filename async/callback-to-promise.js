@@ -1,47 +1,43 @@
 //Callback Hell Example
-class UserStorage{ //사용자의 데이터를 서버(백엔드)에서 받아오기
-    loginUser(id, password, onSuccess, onError){
-        setTimeout(()=>{
-            if(
-                (id === 'ellie' && password === 'dream') ||
-                (id === 'coder' && password ==='academy')
-            ){
-                onSuccess(id); //콜백. 아이디 전달해줌
-            } else{
-                onError(new Error('not found')); //onError콜백을 부르면서 Error라는 object 생성
-            }
-        }, 2000);
+class Userstorage{
+    loginUser(id, password){
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+                if(
+                    (id==='ellie'&&password==='dream')||
+                    (id==='coder'&&password==='academy')
+                ){
+                    resolve(id);
+                }else{
+                    reject(new Error('not found')); //만약 실패를 한다면 reject를 통하여 error전달
+                }
+            }, 2000);
+        });
     }
-    getRoles(user, onSuccess, onError){ //사용자 정보 다시 받아오기
-        setTimeout(()=>{
-          if(user==='ellie'){
-            onSuccess({name:'ellie', role: 'admin'});
-          } else{
-            onError(new Error('no access'));
-          }
-         }, 1000);
+    getRoles(user){
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+                if(user==='ellie'){
+                    resolve({name:'ellie',role:'admin'})
+                }else{
+                    reject(new Error('no access'));w
+                }
+            }, 1000);
+        });
+    }
+ async getUserWithRole(user, password) {
+    const id = await this.loginUser(user, password);
+    const role = await this.getRoles(id);
+     return role;
     }
 }
 
-const UserStorage = new UserStorage();
+const userStorage = new Userstorage(); //object 선언
 const id = prompt('enter your id');
-//prompt API: 화면에 dialog 띄움
 const password = prompt('enter your password');
-UserStorage.loginUser(
-    id, 
-    password, 
-    (user) => { //사용자가 로그인이 되었다면
-        UserStorage.getRoles(
-            user, 
-            userWithRole => {
-                alert(`Hello ${userWithRole.name}, you have a ${user.role},role`)
-            },
-            error=>{
-                console.log(error);
-            } 
-            );
-    }, 
-    error => { //에러가 나면
-        console.log(error);
-    }
-);
+
+userStorage
+    .loginUser(id, password)
+    .then(user = userStorage.getRoles) //잘된다면 user를 받아와서 userStorage 속 getRoles함수 호출
+    .then(user => alert(`Hello ${user.name}, you have a ${user.role}`)) //모든게 다 성공한다면 최종적으로 받아오는 user를 이용하여 수행
+    .catch(console.log);
